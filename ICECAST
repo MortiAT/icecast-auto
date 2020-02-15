@@ -1,0 +1,72 @@
+#!/bin/bash
+
+dnf -y --enablerepo=PowerTools install libogg-devel libxslt-devel libogg-devel libvorbis-devel gcc make httpd gcc-c++ libshout-devel git
+
+wget http://downloads.xiph.org/releases/icecast/icecast-2.4.2.tar.gz
+tar -zxvf icecast-2.4.2.tar.gz
+cd icecast-2.4.2
+
+./configure
+make
+make install
+
+sudo firewall-cmd --permanent --add-port=80/tcp
+sudo firewall-cmd --permanent --add-port=443/tcp
+
+ln -s /usr/local/share/doc/icecast /var/www/html
+systemctl enable httpd
+
+useradd -d /usr/local/share/icecast icecast
+chown -R icecast:icecast /usr/local/share/icecast
+
+cd /usr/local/etc
+cp -p icecast.xml icecast.xml.org
+rm -f icecast.xml
+
+wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/icecast.xml
+mv icecast.xml /usr/local/etc/
+chown icecast:icecast /usr/local/etc/icecast.xml
+
+mkdir /var/log/icecast
+chown icecast:icecast /var/log/icecast
+sudo firewall-cmd --permanent --add-port=8000/tcp
+
+cd
+wget http://downloads.us.xiph.org/releases/ices/ices-0.4.tar.gz
+tar -zxvf ices-0.4.tar.gz
+cd ices-0.4
+./configure
+make
+make install
+
+
+cd /usr/local/share/icecast
+mkdir music
+chown -R icecast:icecast music
+
+
+su icecast
+cd /usr/local/share/icecast/music
+wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/Noisestorm%20-%20Crab%20Rave%20%5BMonstercat%20Release%5D-LDU_Txk06tM.mp3
+wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/Toto%20-%20Africa%20\(Official%20Music%20Video\)-FTQbiNvZqaY.mp3
+find $(pwd) -name \*.mp3 | sort > playlist.txt
+more playlist.txt
+exit
+
+cd
+cd ices-0.4/conf
+cp -p ices.conf.dist /usr/local/etc/ices.conf
+mkdir /var/log/ices
+chown icecast:icecast /var/log/ices
+rm -f /usr/local/etc/ices.conf
+wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/ices.conf
+mv ices.conf /usr/local/etc/
+chown icecast:icecast /usr/local/etc/ices.conf
+
+reboot
+
+su icecast
+icecast -c /usr/local/etc/icecast.xml &
+sleep 1
+ices -c /usr/local/etc/ices.conf &
+
