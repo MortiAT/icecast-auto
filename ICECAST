@@ -1,6 +1,7 @@
 #!/bin/bash
 
-dnf -y --enablerepo=PowerTools install libogg-devel libxslt-devel libogg-devel libvorbis-devel gcc make httpd gcc-c++ libshout-devel git
+yum -y install dnf
+dnf -y --enablerepo=PowerTools install libogg-devel libxslt-devel libogg-devel libvorbis-devel gcc make httpd gcc-c++ libshout-devel
 
 wget http://downloads.xiph.org/releases/icecast/icecast-2.4.2.tar.gz
 tar -zxvf icecast-2.4.2.tar.gz
@@ -44,14 +45,12 @@ cd /usr/local/share/icecast
 mkdir music
 chown -R icecast:icecast music
 
-
-su icecast
+sudo -u icecast -H sh -c  "
 cd /usr/local/share/icecast/music
 wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/Noisestorm%20-%20Crab%20Rave%20%5BMonstercat%20Release%5D-LDU_Txk06tM.mp3
 wget https://raw.githubusercontent.com/MortiAT/icecast-auto/master/Toto%20-%20Africa%20\(Official%20Music%20Video\)-FTQbiNvZqaY.mp3
-find $(pwd) -name \*.mp3 | sort > playlist.txt
-more playlist.txt
-exit
+find /usr/local/share/icecast/music/ -name \*.mp3 | sort > playlist.txt
+"
 
 cd
 cd ices-0.4/conf
