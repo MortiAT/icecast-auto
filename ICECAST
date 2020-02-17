@@ -1,7 +1,6 @@
 #!/bin/bash
 
-yum -y install dnf
-dnf -y --enablerepo=PowerTools install libogg-devel libxslt-devel libogg-devel libvorbis-devel gcc make httpd gcc-c++ libshout-devel
+yum -y install libogg-devel libxslt-devel libogg-devel libvorbis-devel gcc make httpd gcc-c++ libshout-devel
 
 wget http://downloads.xiph.org/releases/icecast/icecast-2.4.2.tar.gz
 tar -zxvf icecast-2.4.2.tar.gz
